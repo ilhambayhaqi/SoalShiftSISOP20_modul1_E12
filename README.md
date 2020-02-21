@@ -1,7 +1,7 @@
 # SoalShiftSISOP20_modul1_E12
 Repository Soal Shift Modul 1
 
-**Soal 1**
+**Soal 1**  
 Whits adalah seorang mahasiswa teknik informatika. Dia mendapatkan tugas praktikum
 untuk membuat laporan berdasarkan data yang ada pada file “Sample-Superstore.tsv”.
 Namun dia tidak dapat menyelesaikan tugas tersebut. Laporan yang diminta berupa :
@@ -88,4 +88,37 @@ echo "$minProduct" > ProductName.txt && minProduct="$(cat ProductName.txt)"
 ```
 Pada Problem 1C, kami menyertakan dua solusi, solusi diatas merupakan salah satu solusi dengan menganggap mencari 10 produk dengan profit terendah dari gabungan state output problem 1B. Pada kasus ini, cara yang digunakan juga masih sama dengan penyelesaian 1B hanya saja menggunakan filter ```if($11 == list[i])``` dimana list merupakan array yang menyimpan State dari problem 1B. Kemudian dilakukan sort dan diprint 10 nama produk.
 
+```
+awk -v var="$minState" '
+BEGIN{
+	FS="\t";
+	RS="\r\n";
+	counter=split(var,list,"\n");
+}
+NR>1{
+	for(i=1; i<=counter; i++){
+		if($11 == list[i]){
+			arr[$17,list[i]]+=$21;
+		}
+	}
+}
+END{
+	for(i in list){
+		for(j in arr){
+			split(j, k, SUBSEP);
+			if(k[2] == list[i]){
+				printf("%s|%d\n", k[1],arr[j]) > "ProductName"list[i]".txt";
+			}
+		}
+	}
+	
+}
+' Sample-Superstore.tsv
 
+while read -r i ; do
+	sort -h -t '|' -k2 -o "ProductName${i}.txt" "ProductName${i}.txt"
+	minProduct="$(awk -F'|' 'NR<=10{ print $1 }' "ProductName${i}.txt")"
+	echo "$minProduct" > "ProductName${i}.txt"
+done < State.txt
+```
+Cara kedua pada problem 1C adalah bila diasumsikan untuk mencetak 10 nama produk untuk masing-masing state. Pada kasus ini digunakan set array pada awk dengan input parameter variabel dari file output problem 1B. Disini kemudian dilakukan pengecekan untuk tiap member dari list dengan ```if($11 == list[i]``` kemudian untuk dilakukan nested loop dimana setiap loop, akan mencetak hasil filter pada ```ProductName(nama_State).txt```. Dari hasil output tersebut dilakukan sorting dan digunakan awk untuk menampilkan 10 nama produk dengan profit terkecil untuk tiap tiap output file.
