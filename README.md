@@ -2,22 +2,6 @@
 Repository Soal Shift Modul 1
 
 **Soal 1**  
-Whits adalah seorang mahasiswa teknik informatika. Dia mendapatkan tugas praktikum
-untuk membuat laporan berdasarkan data yang ada pada file “Sample-Superstore.tsv”.
-Namun dia tidak dapat menyelesaikan tugas tersebut. Laporan yang diminta berupa :
- 
-- Tentukan wilayah bagian (region) mana yang memiliki keuntungan (profit) paling
-sedikit.  
-- Tampilkan 2 negara bagian (state) yang memiliki keuntungan (profit) paling
-sedikit berdasarkan hasil poin a.  
-- Tampilkan 10 produk (product name) yang memiliki keuntungan (profit) paling
-sedikit berdasarkan 2 negara bagian (state) hasil poin b.
-
-Whits memohon kepada kalian yang sudah jago mengolah data untuk mengerjakan
-laporan tersebut.
-
-Penyelesaian
-- soal 1
 ```awk '
 BEGIN{
 	FS="\t"; 
@@ -124,7 +108,7 @@ done < State.txt
 Cara kedua pada problem 1C adalah bila diasumsikan untuk mencetak 10 nama produk untuk masing-masing state. Pada kasus ini digunakan set array pada awk dengan input parameter variabel dari file output problem 1B. Disini kemudian dilakukan pengecekan untuk tiap member dari list dengan ```if($11 == list[i]``` kemudian untuk dilakukan nested loop dimana setiap loop, akan mencetak hasil filter pada ```ProductName(nama_State).txt```. Dari hasil output tersebut dilakukan sorting dan digunakan awk untuk menampilkan 10 nama produk dengan profit terkecil untuk tiap tiap output file.
 
 
-- Soal 2  
+**Soal 2** 
 ```
 #!bin/bash
 
@@ -205,7 +189,7 @@ hehe=$(ls -i ${1} | cut -d ' ' -f1)
 Pendekatan ini melakukan handling terhadap perubahan pada file, namun pada metode ini dibutuhkan password root karena perintah harus dijalakan dengan ```sudo```.   
 Kemudian script kedua merupakan script decrypt, konsep script ini sama dengan script encrypt dimana hanya melakukan perubahan pada key menjadi ```let "key=26-${key}"```  
 
-- Soal 3
+**Soal 3**
 ```
 #!bin/bash
 
