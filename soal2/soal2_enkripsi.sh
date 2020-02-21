@@ -4,7 +4,20 @@ if  [[ $1 =~ ^[A-Za-z]+$".txt" ]]; then
 	Pass="$(cat /dev/urandom | tr -d -c 'a-zA-Z0-9' | fold -w 28 | head -n 1)"
 
 	echo "$Pass" > "${1}"
-	key=$(echo "$(ls -l ${1} | cut -d ' ' -f8 | cut -d ':' -f1)")
+
+	#Using Last modified Date
+	#key=$(echo "$(ls -l ${1} | cut -d ' ' -f8 | cut -d ':' -f1)")
+
+	# Using created Date
+	hehe=$(ls -i ${1} | cut -d ' ' -f1)
+	disk=$(df -T ./${1} | cut -d ' ' -f1)
+	disk=${disk//Filesystem}
+
+	echo -n "Root Pass : "
+	read rootPass
+
+	createDate=$(sudo -S <<< "$rootPass" debugfs -R "stat <$hehe>"  $disk | grep "crtime")
+	key=$(echo "$createDate" | cut -d ' ' -f7 | cut -d ':' -f1)
 
 	Filename=$(echo "${1}" | cut -d '.' -f1)
 
