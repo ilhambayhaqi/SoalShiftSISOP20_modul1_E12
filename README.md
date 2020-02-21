@@ -206,4 +206,106 @@ Pendekatan ini melakukan handling terhadap perubahan pada file, namun pada metod
 Kemudian script kedua merupakan script decrypt, konsep script ini sama dengan script encrypt dimana hanya melakukan perubahan pada key menjadi ```let "key=26-${key}"```  
 
 - Soal 3
+```
+#!bin/bash
 
+Filename="pdkt_kusuma_"
+Kenangan="kenangan_"
+Duplicate="duplicate_"
+
+cd /home/almond/Sisop/Praktikum1/soal3
+
+for (( i = 1; i <= 28; i++ )); do
+	wget -O "$Filename$i" "https://loremflickr.com/320/240/cat" -a "wget.log"
+	grep "Location" wget.log > location.log
+	
+
+	if [[ ! -d ./kenangan ]]; then
+		mkdir kenangan
+	fi
+
+	if [[ ! -d ./duplicate ]]; then
+		mkdir duplicate
+	fi
+
+	if [[ $(ls ./kenangan | wc -l) -eq 0 ]]; then
+		lastKenangan=0;
+	else
+		lastKenangan="$(ls ./kenangan | awk -v var=$kenangan '{gsub("_"," ")}{print $2}' | sort -n | tail -n1 )"
+	fi
+
+	if [[ $(ls ./duplicate | wc -l) -eq 0 ]]; then
+		lastDuplicate=0;	
+	else
+		lastDuplicate="$(ls ./duplicate | awk -v var=$duplicate '{gsub("_"," ")}{print $2}' | sort -n | tail -n1 )"
+	fi
+
+
+	thisFile=$(cat location.log | tail -n1 | awk '{print $2}' )
+	countFile=$(grep "$thisFile" location.log | wc -l)
+
+	let lastDuplicate=$lastDuplicate+1
+	let lastKenangan=$lastKenangan+1
+
+	if [[ countFile -eq 1 ]]; then
+		mv $Filename$i ./kenangan/$Kenangan${lastKenangan}
+	else
+		mv $Filename$i ./duplicate/$Duplicate${lastDuplicate}
+	fi
+done
+
+cp wget.log wget.log.bak
+cp location.log location.log.bak
+```
+Pada problem 3A ini, kita diminta untuk mendownload gambar sebanyak 28 kali pada link yang telah disediakan dan juga mencatat log nya. Untuk melakukan ini sebagai berikut. 
+```
+for (( i = 1; i <= 28; i++ )); do
+	wget -O "$Filename$i" "https://loremflickr.com/320/240/cat" -a "wget.log"
+	grep "Location" wget.log > location.log
+	...
+done
+
+cp wget.log wget.log.bak
+cp location.log location.log.bak
+```
+Untuk problem 3B, diminta untuk melakukan download otomatis setiap 8 jam dimulai dari pukul 6.05 setiap hari kecuali Sabtu. Untuk melakukannya dibuat command pada crontab sebagai berikut.
+```
+5 6,14,22 * * 0-5 bash /home/almond/Sisop/Praktikum1/soal3/soal3.sh
+```
+Dengan menjalankan crontab, masih ada masalah yang didapatkan yaitu script akan dijalankan pada path home, sehingga untuk mengatasinya pada awal script dibuat command ```cd /home/almond/Sisop/Praktikum1/soal3``` untuk berpindah pada path yang diinginkan  
+Kemudian untuk problem 3c, kita diminta untuk melakukan identifikasi gambar yang telah didownload dan dimasukkan ke folder kenangan dan duplikat untuk file duplikat yang terdapat pada folder kenangan. Pertama dilakukan pembuatan folder kenangan dan duplikat sebagai berikut.
+```
+if [[ ! -d ./kenangan ]]; then
+	mkdir kenangan
+fi
+if [[ ! -d ./duplicate ]]; then
+	mkdir duplicate
+fi
+```
+Untuk menentukan index terakhir pada masing masing folder dilakukan dengan
+```
+	if [[ $(ls ./kenangan | wc -l) -eq 0 ]]; then
+		lastKenangan=0;
+	else
+		lastKenangan="$(ls ./kenangan | awk -v var=$kenangan '{gsub("_"," ")}{print $2}' | sort -n | tail -n1 )"
+	fi
+
+	if [[ $(ls ./duplicate | wc -l) -eq 0 ]]; then
+		lastDuplicate=0;	
+	else
+		lastDuplicate="$(ls ./duplicate | awk -v var=$duplicate '{gsub("_"," ")}{print $2}' | sort -n | tail -n1 )"
+	fi
+```
+Dan terakhir untuk melakukan identifikasi digunakan perbandingan pada location.log. Untuk codenya sebagai berikut.
+```
+	if [[ countFile -eq 1 ]]; then
+		mv $Filename$i ./kenangan/$Kenangan${lastKenangan}
+	else
+		mv $Filename$i ./duplicate/$Duplicate${lastDuplicate}
+	fi
+```
+Selesai. :)
+
+
+
+	
