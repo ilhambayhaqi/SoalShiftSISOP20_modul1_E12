@@ -122,3 +122,88 @@ while read -r i ; do
 done < State.txt
 ```
 Cara kedua pada problem 1C adalah bila diasumsikan untuk mencetak 10 nama produk untuk masing-masing state. Pada kasus ini digunakan set array pada awk dengan input parameter variabel dari file output problem 1B. Disini kemudian dilakukan pengecekan untuk tiap member dari list dengan ```if($11 == list[i]``` kemudian untuk dilakukan nested loop dimana setiap loop, akan mencetak hasil filter pada ```ProductName(nama_State).txt```. Dari hasil output tersebut dilakukan sorting dan digunakan awk untuk menampilkan 10 nama produk dengan profit terkecil untuk tiap tiap output file.
+
+
+- Soal 2  
+```
+#!bin/bash
+
+if  [[ $1 =~ ^[A-Za-z]+$".txt" ]]; then
+	Pass="$(cat /dev/urandom | tr -d -c 'a-zA-Z0-9' | fold -w 28 | head -n 1)"
+
+	echo "$Pass" > "${1}"
+
+	#Using Last modified Date
+	#key=$(echo "$(ls -l ${1} | cut -d ' ' -f8 | cut -d ':' -f1)")
+
+	# Using created Date
+	hehe=$(ls -i ${1} | cut -d ' ' -f1)
+	disk=$(df -T ./${1} | cut -d ' ' -f1)
+	disk=${disk//Filesystem}
+
+	echo -n "Root Pass : "
+	read rootPass
+
+	createDate=$(sudo -S <<< "$rootPass" debugfs -R "stat <$hehe>"  $disk | grep "crtime")
+	key=$(echo "$createDate" | cut -d ' ' -f7 | cut -d ':' -f1)
+
+	Filename=$(echo "${1}" | cut -d '.' -f1)
+
+	a=({a..z})
+	b=({A..Z})
+
+	shift=()
+	shift+=("${a[@]:(-(26-$key))}")
+	shift+=("${a[@]:0:$(($key+1))}")
+
+	SHIFT=()
+	SHIFT+=("${b[@]:(-(26-$key))}")
+	SHIFT+=("${b[@]:0:$(($key+1))}")
+
+	Filename=$(echo $Filename | tr "${a[*]}" "${shift[*]}" | tr "${b[*]}" "${SHIFT[*]}")
+	Filename="$Filename".txt
+	
+	mv ${1} ${Filename}
+
+elif [[ $1 != *".txt" ]]; then
+	echo "File extension must be .txt"
+else
+	echo "Invalid Filename, must be Alphabet name"
+fi
+```
+
+Pada problem ini, diminta untuk menyimpan random password dengan length 28 yang mencakup karakter Alphanumeric pada file txt dengan nama file sesuai argument yang dipassing. Untuk mengenerate password kami menggunakan  
+```
+Pass="$(cat /dev/urandom | tr -d -c 'a-zA-Z0-9' | fold -w 28 | head -n 1)"
+```
+Kemudian untuk problem 2B, dimana input argument harus berekstensi .txt dan hanya terdiri dari Alphabet dilakukan filtering dengan menggunakan percabangan sebagai berikut.
+```
+if  [[ $1 =~ ^[A-Za-z]+$".txt" ]]; then
+...
+elif [[ $1 != *".txt" ]]; then
+	echo "File extension must be .txt"
+else
+	echo "Invalid Filename, must be Alphabet name"
+fi
+```
+Kemudian pada poin C dilakukan enkripsi dengan Caesar Cipher dengan key merupakan hasil file tersebut digunakan. Untuk menentukan waktu file di-create, ada dua pendekatan. Pendekatan yang pertama didasarkan dengan latest modified date dengan key sebagai berikut. 
+```
+key=$(echo "$(ls -l ${1} | cut -d ' ' -f8 | cut -d ':' -f1)")
+```
+Pendekatan dengan latest modified date lebih mudah dan aman namun file dapat menyebabkan kesalahan pada dekripsi ketika file diubah diluar jam pembuatan. Sedangkan pendekatan kedua adalah penentuan key menggunakan ```crtime``` sebagai berikut.
+```
+hehe=$(ls -i ${1} | cut -d ' ' -f1)
+	disk=$(df -T ./${1} | cut -d ' ' -f1)
+	disk=${disk//Filesystem}
+
+	echo -n "Root Pass : "
+	read rootPass
+
+	createDate=$(sudo -S <<< "$rootPass" debugfs -R "stat <$hehe>"  $disk | grep "crtime")
+	key=$(echo "$createDate" | cut -d ' ' -f7 | cut -d ':' -f1)
+```
+Pendekatan ini melakukan handling terhadap perubahan pada file, namun pada metode ini dibutuhkan password root karena perintah harus dijalakan dengan ```sudo```.   
+Kemudian script kedua merupakan script decrypt, konsep script ini sama dengan script encrypt dimana hanya melakukan perubahan pada key menjadi ```let "key=26-${key}"```  
+
+- Soal 3
+
