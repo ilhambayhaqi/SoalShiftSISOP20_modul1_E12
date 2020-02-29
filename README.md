@@ -19,6 +19,10 @@ sort -n -t '-' -k2 -o Region.txt Region.txt &&
 
 minReg="$(awk -F'|' 'NR==1{ print $1 }' Region.txt)"
 echo -n "$minReg" > Region.txt && minReg="$(cat Region.txt)"`
+
+echo "Region :"
+echo "$(cat Region.txt)"
+echo $'\n'
 ```
 
 Pada soal 1A, dilakukan grouping terhadap Region berdasarkan profitnya. Kemudian dilakukan sorting menggunakan bash command menurut profit. Untuk mengambil melakukan print profit terkecil dari Region, digunakan kembali AWK dengan menampilkan hasil sorting pada record pertama.
@@ -43,6 +47,11 @@ sort -h -t '|' -k2 -o State.txt State.txt &&
 
 minState="$(awk -F'|' 'NR<=2{ print $1 }' State.txt)"
 echo "$minState" > State.txt && minState="$(cat State.txt)"
+
+echo "State :"
+echo "$(cat State.txt)"
+echo $'\n'
+
 ```
 Untuk problem 1B, dilakukan passing variabel dari problem 1A, kemudian seperti langkah penyelesaian problem 1A, dilakukan grouping untuk tiap State dengan catatan apabila Region merupakan Region hasil output problem 1A. Kemudian dilakukan sorting menggunakan bash command dan langkah terakhir dilakukan filter menggunakan AWK untuk menampilkan 2 State dengan profit terkecil berdasarkan Region pada 1A.
 
@@ -69,6 +78,11 @@ sort -h -t '|' -k2 -o ProductName.txt ProductName.txt &&
 
 minProduct="$(awk -F'|' 'NR<=10{ print $1 }' ProductName.txt)"
 echo "$minProduct" > ProductName.txt && minProduct="$(cat ProductName.txt)"
+
+echo "ProductName :"
+echo "$(cat ProductName.txt)"
+echo $'\n'
+
 ```
 ![soal1_a](https://user-images.githubusercontent.com/57692117/75609042-e3b76f80-5b37-11ea-9aac-ec68aad0d1fb.png)
 
@@ -105,11 +119,15 @@ while read -r i ; do
 	sort -h -t '|' -k2 -o "ProductName${i}.txt" "ProductName${i}.txt"
 	minProduct="$(awk -F'|' 'NR<=10{ print $1 }' "ProductName${i}.txt")"
 	echo "$minProduct" > "ProductName${i}.txt"
+	echo "ProductName ${i} :"
+	echo "$(cat ProductName${i}.txt)"
+	echo $'\n'
 done < State.txt
 ```
-
+![soal1_b](https://user-images.githubusercontent.com/57692117/75609087-46a90680-5b38-11ea-9744-522eced33861.png)
 
 Cara kedua pada problem 1C adalah bila diasumsikan untuk mencetak 10 nama produk untuk masing-masing state. Pada kasus ini digunakan set array pada awk dengan input parameter variabel dari file output problem 1B. Disini kemudian dilakukan pengecekan untuk tiap member dari list dengan ```if($11 == list[i]``` kemudian untuk dilakukan nested loop dimana setiap loop, akan mencetak hasil filter pada ```ProductName(nama_State).txt```. Dari hasil output tersebut dilakukan sorting dan digunakan awk untuk menampilkan 10 nama produk dengan profit terkecil untuk tiap tiap output file.
+Kesulitan pada cara kedua adalah pada penerapan array dikarenakan pada awk tidak mengenal konsep multidimensional array.
 
 
 **Soal 2** 
@@ -117,8 +135,12 @@ Cara kedua pada problem 1C adalah bila diasumsikan untuk mencetak 10 nama produk
 #!bin/bash
 
 if  [[ $1 =~ ^[A-Za-z]+$".txt" ]]; then
-	Pass="$(cat /dev/urandom | tr -d -c 'a-zA-Z0-9' | fold -w 28 | head -n 1)"
+	
+	Pass=""
 
+	while [[ !($Pass == *[A-Z]*) || !($Pass == *[a-z]*) || !($Pass == *[0-9]*) ]]; do
+		Pass="$(cat /dev/urandom | tr -d -c 'a-zA-Z0-9' | fold -w 28 | head -n 1)"
+	done
 	echo "$Pass" > "${1}"
 
 	#Using Last modified Date
@@ -162,8 +184,14 @@ fi
 
 Pada problem ini, diminta untuk menyimpan random password dengan length 28 yang mencakup karakter Alphanumeric pada file txt dengan nama file sesuai argument yang dipassing. Untuk mengenerate password kami menggunakan  
 ```
-Pass="$(cat /dev/urandom | tr -d -c 'a-zA-Z0-9' | fold -w 28 | head -n 1)"
+	Pass=""
+
+	while [[ !($Pass == *[A-Z]*) || !($Pass == *[a-z]*) || !($Pass == *[0-9]*) ]]; do
+		Pass="$(cat /dev/urandom | tr -d -c 'a-zA-Z0-9' | fold -w 28 | head -n 1)"
+	done
 ```
+Looping while pada code diatas untuk mengatasi password random yang dibuat jika tidak mencakup huruf kapital, kecil, dan angka.
+
 Kemudian untuk problem 2B, dimana input argument harus berekstensi .txt dan hanya terdiri dari Alphabet dilakukan filtering dengan menggunakan percabangan sebagai berikut.
 ```
 if  [[ $1 =~ ^[A-Za-z]+$".txt" ]]; then
@@ -178,7 +206,7 @@ Kemudian pada poin C dilakukan enkripsi dengan Caesar Cipher dengan key merupaka
 ```
 key=$(echo "$(ls -l ${1} | cut -d ' ' -f8 | cut -d ':' -f1)")
 ```
-Pendekatan dengan latest modified date lebih mudah dan aman namun file dapat menyebabkan kesalahan pada dekripsi ketika file diubah diluar jam pembuatan. Sedangkan pendekatan kedua adalah penentuan key menggunakan ```crtime``` sebagai berikut.
+Pendekatan dengan latest modified date lebih mudah dan aman namun file dapat menyebabkan kesalahan pada dekripsi ketika file diubah misalnya file dipindah dan dikembalikan. Sedangkan pendekatan kedua adalah penentuan key menggunakan ```crtime``` sebagai berikut.
 ```
 hehe=$(ls -i ${1} | cut -d ' ' -f1)
 	disk=$(df -T ./${1} | cut -d ' ' -f1)
@@ -190,8 +218,10 @@ hehe=$(ls -i ${1} | cut -d ' ' -f1)
 	createDate=$(sudo -S <<< "$rootPass" debugfs -R "stat <$hehe>"  $disk | grep "crtime")
 	key=$(echo "$createDate" | cut -d ' ' -f7 | cut -d ':' -f1)
 ```
-Pendekatan ini melakukan handling terhadap perubahan pada file, namun pada metode ini dibutuhkan password root karena perintah harus dijalakan dengan ```sudo```.   
-Kemudian script kedua merupakan script decrypt, konsep script ini sama dengan script encrypt dimana hanya melakukan perubahan pada key menjadi ```let "key=26-${key}"```  
+Pendekatan ini melakukan handling terhadap perubahan pada file seperti pemindahan file ke direktori lainnya, namun pada metode ini dibutuhkan password root karena perintah harus dijalakan dengan ```sudo```.   
+Kemudian script kedua merupakan script decrypt, konsep script ini sama dengan script encrypt dimana hanya melakukan perubahan pada key menjadi ```let "key=26-${key}"```
+
+![soal2](https://user-images.githubusercontent.com/57692117/75609278-cb485480-5b39-11ea-942c-d787c327241a.png)
 
 **Soal 3**
 ```
