@@ -70,6 +70,8 @@ sort -h -t '|' -k2 -o ProductName.txt ProductName.txt &&
 minProduct="$(awk -F'|' 'NR<=10{ print $1 }' ProductName.txt)"
 echo "$minProduct" > ProductName.txt && minProduct="$(cat ProductName.txt)"
 ```
+![soal1_a](https://user-images.githubusercontent.com/57692117/75609042-e3b76f80-5b37-11ea-9aac-ec68aad0d1fb.png)
+
 Pada Problem 1C, kami menyertakan dua solusi, solusi diatas merupakan salah satu solusi dengan menganggap mencari 10 produk dengan profit terendah dari gabungan state output problem 1B. Pada kasus ini, cara yang digunakan juga masih sama dengan penyelesaian 1B hanya saja menggunakan filter ```if($11 == list[i])``` dimana list merupakan array yang menyimpan State dari problem 1B. Kemudian dilakukan sort dan diprint 10 nama produk.
 
 ```
@@ -105,6 +107,8 @@ while read -r i ; do
 	echo "$minProduct" > "ProductName${i}.txt"
 done < State.txt
 ```
+
+
 Cara kedua pada problem 1C adalah bila diasumsikan untuk mencetak 10 nama produk untuk masing-masing state. Pada kasus ini digunakan set array pada awk dengan input parameter variabel dari file output problem 1B. Disini kemudian dilakukan pengecekan untuk tiap member dari list dengan ```if($11 == list[i]``` kemudian untuk dilakukan nested loop dimana setiap loop, akan mencetak hasil filter pada ```ProductName(nama_State).txt```. Dari hasil output tersebut dilakukan sorting dan digunakan awk untuk menampilkan 10 nama produk dengan profit terkecil untuk tiap tiap output file.
 
 
