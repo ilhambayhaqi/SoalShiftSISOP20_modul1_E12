@@ -223,6 +223,8 @@ Kemudian script kedua merupakan script decrypt, konsep script ini sama dengan sc
 
 ![soal2](https://user-images.githubusercontent.com/57692117/75609278-cb485480-5b39-11ea-942c-d787c327241a.png)
 
+Kesulitan pada soal 2 adalah untuk melakukan cut string pada saat mencari disk dan crtime.
+
 **Soal 3**
 ```
 #!bin/bash
