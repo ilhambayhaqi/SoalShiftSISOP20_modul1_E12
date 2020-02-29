@@ -329,8 +329,8 @@ Dan terakhir untuk melakukan identifikasi digunakan perbandingan pada location.l
 ![Screenshot from 2020-02-29 21-29-02](https://user-images.githubusercontent.com/57692117/75609377-97216380-5b3a-11ea-8374-20787e6e8258.png)
 ![Screenshot from 2020-02-29 21-29-16](https://user-images.githubusercontent.com/57692117/75609378-98529080-5b3a-11ea-89cb-ffb9b0a3d92f.png)
 
-
-Selesai. :)
+Kesulitan yang paling dirasakan adalah saat mencari index terakir dari file pada folder kenangan dan duplicate.
+  Selesai. :)
 
 
 
