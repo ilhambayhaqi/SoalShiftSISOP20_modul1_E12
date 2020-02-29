@@ -322,6 +322,12 @@ Dan terakhir untuk melakukan identifikasi digunakan perbandingan pada location.l
 		mv $Filename$i ./duplicate/$Duplicate${lastDuplicate}
 	fi
 ```
+![Screenshot from 2020-02-29 21-27-53](https://user-images.githubusercontent.com/57692117/75609374-94bf0980-5b3a-11ea-979a-e0cd301841ef.png)
+![Screenshot from 2020-02-29 21-28-10](https://user-images.githubusercontent.com/57692117/75609376-95f03680-5b3a-11ea-9d27-b89759b883fc.png)
+![Screenshot from 2020-02-29 21-29-02](https://user-images.githubusercontent.com/57692117/75609377-97216380-5b3a-11ea-8374-20787e6e8258.png)
+![Screenshot from 2020-02-29 21-29-16](https://user-images.githubusercontent.com/57692117/75609378-98529080-5b3a-11ea-89cb-ffb9b0a3d92f.png)
+
+
 Selesai. :)
 
 
